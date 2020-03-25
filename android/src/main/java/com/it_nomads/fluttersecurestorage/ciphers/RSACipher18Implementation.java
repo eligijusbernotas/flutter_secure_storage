@@ -13,6 +13,7 @@ import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Calendar;
@@ -109,9 +110,23 @@ class RSACipher18Implementation {
         KeyStore ks = KeyStore.getInstance(KEYSTORE_PROVIDER_ANDROID);
         ks.load(null);
 
-        Key privateKey = ks.getKey(KEY_ALIAS, null);
-        if (privateKey == null) {
-            createKeys(context);
+        try {
+            Key privateKey = ks.getKey(KEY_ALIAS, null);
+            if (privateKey == null) {
+                createKeys(context);
+            }
+        } catch (UnrecoverableKeyException e) { // bypass
+            e.printStackTrace();
+            // You can again call the method and make a counter for deadlock
+            // situation or implement your own code according to your
+            // situation
+            if (retry) {
+                ks.deleteEntry(keyName);
+                return getCypher(keyName, false);
+            }
+        } catch (final Exception e){
+            e.printStackTrace();
+            throw e;
         }
     }
 
