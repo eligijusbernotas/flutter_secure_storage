@@ -120,10 +120,10 @@ class RSACipher18Implementation {
             // You can again call the method and make a counter for deadlock
             // situation or implement your own code according to your
             // situation
-            if (retry) {
-                ks.deleteEntry(keyName);
-                return getCypher(keyName, false);
-            }
+            // if (retry) {
+            //     ks.deleteEntry(keyName);
+            //     return getCypher(keyName, false);
+            // }
         } catch (final Exception e){
             e.printStackTrace();
             throw e;
